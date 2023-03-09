@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
-  SafeAreaView,
+  LogBox,
   Alert,
   FlatList,
+  ScrollView,
+  KeyboardAvoidingView,
 } from 'react-native';
 import BackgroundGradient from '../components/Background';
 import NumberContainer from '../components/game/NumberContainer';
@@ -46,6 +47,10 @@ const GameScreen = ({route, navigation}) => {
   }, [currentGuess, enteredValue]);
 
   useEffect(() => {
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+  }, []);
+
+  useEffect(() => {
     minBoundary = 1;
     maxBoundary = 100;
   }, []);
@@ -82,42 +87,45 @@ const GameScreen = ({route, navigation}) => {
 
   return (
     <BackgroundGradient>
-      <SafeAreaView>
-        <View style={styles.container}>
-          <Title>Opponent's Guess</Title>
-          <NumberContainer>{currentGuess}</NumberContainer>
-          <Card>
-            <InstructionText style={styles.instText}>
-              Higher or lower?
-            </InstructionText>
-            <View style={styles.buttonContainer}>
-              <View style={styles.flexButtons}>
-                <PrimaryButton onPress={nextGuessHandler.bind(this, 'lower')}>
-                  <Ionicons name="md-remove" size={24} color={Colors.white} />
-                </PrimaryButton>
+      <ScrollView nestedScrollEnabled={true}>
+        <KeyboardAvoidingView>
+          <View style={styles.container}>
+            <Title>Opponent's Guess</Title>
+            <NumberContainer>{currentGuess}</NumberContainer>
+            <Card>
+              <InstructionText style={styles.instText}>
+                Higher or lower?
+              </InstructionText>
+              <View style={styles.buttonContainer}>
+                <View style={styles.flexButtons}>
+                  <PrimaryButton onPress={nextGuessHandler.bind(this, 'lower')}>
+                    <Ionicons name="md-remove" size={24} color={Colors.white} />
+                  </PrimaryButton>
+                </View>
+                <View style={styles.flexButtons}>
+                  <PrimaryButton
+                    onPress={nextGuessHandler.bind(this, 'greater')}>
+                    <Ionicons name="md-add" size={24} color={Colors.white} />
+                  </PrimaryButton>
+                </View>
               </View>
-              <View style={styles.flexButtons}>
-                <PrimaryButton onPress={nextGuessHandler.bind(this, 'greater')}>
-                  <Ionicons name="md-add" size={24} color={Colors.white} />
-                </PrimaryButton>
-              </View>
+            </Card>
+            <View style={styles.listContainer}>
+              <FlatList
+                scrollEnabled={true}
+                data={guessRounds}
+                renderItem={itemData => (
+                  <GuessLogItem
+                    roundNumber={guessRoundsListLength - itemData.index}
+                    guessNumber={itemData.item}
+                  />
+                )}
+                keyExtractor={item => item}
+              />
             </View>
-          </Card>
-          <View style={styles.listContainer}>
-            <FlatList
-              scrollEnabled={true}
-              data={guessRounds}
-              renderItem={itemData => (
-                <GuessLogItem
-                  roundNumber={guessRoundsListLength - itemData.index}
-                  guessNumber={itemData.item}
-                />
-              )}
-              keyExtractor={item => item}
-            />
           </View>
-        </View>
-      </SafeAreaView>
+        </KeyboardAvoidingView>
+      </ScrollView>
     </BackgroundGradient>
   );
 };
@@ -126,6 +134,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 12,
     marginTop: 12,
+    alignItems: 'center',
   },
 
   listContainer: {

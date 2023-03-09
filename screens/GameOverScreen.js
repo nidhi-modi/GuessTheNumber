@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, Text, SafeAreaView, Image} from 'react-native';
+import {View, StyleSheet, Text, ScrollView, Image} from 'react-native';
 import BackgroundGradient from '../components/Background';
 import Title from '../components/ui/Title';
 import Colors from '../constants/Colors';
@@ -9,27 +9,29 @@ const GameOverScreen = ({route, navigation}) => {
   const {userEnteredValue, guessRoundsNo} = route.params;
   return (
     <BackgroundGradient>
-      <View style={styles.container}>
-        <Title>GAME OVER!</Title>
-        <View style={styles.imageContainer}>
-          <Image
-            style={styles.imageStyle}
-            source={require('../assets/success.png')}
-          />
-        </View>
+      <ScrollView>
+        <View style={styles.container}>
+          <Title>GAME OVER!</Title>
+          <View style={styles.imageContainer}>
+            <Image
+              style={styles.imageStyle}
+              source={require('../assets/success.png')}
+            />
+          </View>
 
-        <View>
-          <Text style={styles.generalText}>
-            Your phone needed{' '}
-            <Text style={styles.textStyle}>{guessRoundsNo}</Text> rounds to
-            guess the number{' '}
-            <Text style={styles.textStyle}>{userEnteredValue}</Text>
-          </Text>
+          <View>
+            <Text style={styles.generalText}>
+              Your phone needed{' '}
+              <Text style={styles.textStyle}>{guessRoundsNo}</Text> rounds to
+              guess the number{' '}
+              <Text style={styles.textStyle}>{userEnteredValue}</Text>
+            </Text>
+          </View>
+          <PrimaryButtom onPress={() => navigation.navigate('StartGameScreen')}>
+            Start New Game
+          </PrimaryButtom>
         </View>
-        <PrimaryButtom onPress={() => navigation.navigate('StartGameScreen')}>
-          Start New Game
-        </PrimaryButtom>
-      </View>
+      </ScrollView>
     </BackgroundGradient>
   );
 };
